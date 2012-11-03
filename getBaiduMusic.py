@@ -13,6 +13,7 @@ HAVEDOWNLOADED = list()
 
 def downloadMusic(musicName, musicId):
 	url = 'http://music.baidu.com/song/' + musicId + '/download'
+	print url
 	musicObject = requests.get(url)
 	if musicObject.status_code == 200:
 		musicSoup = BeautifulSoup(musicObject.content)
@@ -31,10 +32,11 @@ def downloadMusic(musicName, musicId):
 				try:
 					req = urllib2.Request(downloadUrl)
 					response = urllib2.urlopen(req)
-					with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName +'.mp3', 'w') as musicHandler:
+					with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName +'.mp3', 'w') \
+					as musicHandler:
 						musicHandler.write(response.read())
 					HAVEDOWNLOADED.append(musicName)
-				except Exception e:
+				except Exception, e:
 					print e.message
 
 
@@ -65,7 +67,7 @@ def parseAlbumList(albumPageContent):
 			for albumItem in albumItems:
 				music = albumItem.find('span', attrs={'class': 'song-title'}).find('a')
 				if music:
-					musicName = music.text.strip()
+					musicName = music.text.strip().replace(' ', '_')
 					musicId = music['href'].replace('/song/', '')
 					downloadMusic(musicName, musicId)
 
@@ -74,7 +76,7 @@ def parseAlbumList(albumPageContent):
 	for albumItem in albumList:
 		album = albumItem.find('a', attrs={'href': re.compile('/album/\d+$')})
 		albumName = album.text.replace('《'.decode('utf-8'), '').replace('》'.decode('utf-8'), '')
-		albumName = albumName.replace(' ', '_')
+		albumName = albumName.strip().replace(' ', '_')
 		albumUrl = 'http://music.baidu.com/' + album['href']
 		basePath = GLOBAL_VARIABLE['savePath']
 		GLOBAL_VARIABLE['savePath'] += '/' + albumName
