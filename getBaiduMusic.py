@@ -125,13 +125,12 @@ def main():
 		if not dirname.endswith('/'):
 			dirname += '/'
 	singerName = sys.argv[1]
-	savePath = dirname + singerName
-	savePath = savePath
+	savePath = dirname + singerName.replace(' ', '_')
 	if not os.path.exists(savePath):
 		os.mkdir(savePath)
-	
-	GLOBAL_VARIABLE['savePath'] = unicode(dirname + singerName, "utf-8")
+	GLOBAL_VARIABLE['savePath'] = unicode(savePath, "utf-8")
 	GLOBAL_VARIABLE['singerName'] = unicode(singerName, 'utf-8')
+
 	searchSingerMusic(singerName, album = album)
 
 
