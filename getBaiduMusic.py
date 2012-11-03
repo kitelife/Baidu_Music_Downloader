@@ -20,18 +20,22 @@ def downloadMusic(musicName, musicId):
 		if downloadItem['href']:
 			downloadUrl = downloadItem['href'].replace('/data/music/file?link=', '')
 			if platform.system() == 'Linux':
-				downloadCmd = 'wget ' + downloadUrl + ' -O ' + GLOBAL_VARIABLE['savePath'] + '/' + musicName + '.mp3'
+				downloadCmd = 'wget ' + downloadUrl + ' -O ' + GLOBAL_VARIABLE['savePath'] + \
+					'/' + musicName + '.mp3'
 				downloadCmd = downloadCmd.encode('utf-8')
 				os.system(downloadCmd)
 				HAVEDOWNLOADED.append(musicName)
 			else:
 				import urllib2
 				print downloadUrl
-				req = urllib2.Request(downloadUrl)
-				response = urllib2.urlopen(req)
-				with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName +'.mp3', 'w') as musicHandler:
-					musicHandler.write(response.read())
-				HAVEDOWNLOADED.append(musicName)
+				try:
+					req = urllib2.Request(downloadUrl)
+					response = urllib2.urlopen(req)
+					with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName +'.mp3', 'w') as musicHandler:
+						musicHandler.write(response.read())
+					HAVEDOWNLOADED.append(musicName)
+				except Exception e:
+					print e.message
 
 
 def getSearchResultNum(searchFirstPageResult):
@@ -92,7 +96,8 @@ def searchSingerMusic(singerName, album=False):
 			parseAlbumList(pageObject.content)
 			start, size = 10, 10
 			while start < totalNum:
-				url = 'http://music.baidu.com/search/album?key=' + singerName + '&start=' + str(start) + '&size=' + str(size)
+				url = 'http://music.baidu.com/search/album?key=' + singerName + '&start=' + \
+					str(start) + '&size=' + str(size)
 				pageObject = requests.get(url)
 				parseAlbumList(pageObject.content)
 				start += size
@@ -101,7 +106,8 @@ def searchSingerMusic(singerName, album=False):
 			parseMusicList(pageObject.content)
 			start, size = 20, 20
 			while start < totalNum:
-				url = 'http://music.baidu.com/search/song?key=' + singerName + '&start=' + str(start) + '&size=' + str(size)
+				url = 'http://music.baidu.com/search/song?key=' + singerName + '&start=' + \
+					str(start) + '&size=' + str(size)
 				pageObject = requests.get(url)
 				parseMusicList(pageObject.content)
 				start += size
@@ -118,7 +124,7 @@ def main():
 			dirname += '/'
 	singerName = sys.argv[1]
 	savePath = dirname + singerName
-	savePath = savePath.decode('utf-8').encode('utf-8')
+	savePath = savePath
 	if not os.path.exists(savePath):
 		os.mkdir(savePath)
 	
