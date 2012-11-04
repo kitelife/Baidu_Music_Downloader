@@ -5,6 +5,7 @@ import sys
 import os
 import platform
 import requests
+import urllib2
 import re
 from BeautifulSoup import BeautifulSoup
 
@@ -27,7 +28,6 @@ def downloadMusic(musicName, musicId):
 				os.system(downloadCmd)
 				HAVEDOWNLOADED.append(musicName)
 			else:
-				import urllib2
 				print downloadUrl
 				try:
 					req = urllib2.Request(downloadUrl)
@@ -49,7 +49,6 @@ def downloadLRC(musicName, musicId):
 		if downloadItem:
 			downloadUrl = downloadItem['href']
 			print 'LRC: ', downloadUrl
-			import urllib2
 			try:
 				req = urllib2.Request(downloadUrl)
 				response = urllib2.urlopen(req)
