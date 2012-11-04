@@ -49,13 +49,20 @@ def downloadLRC(musicName, musicId):
 		if downloadItem:
 			downloadUrl = downloadItem['href']
 			print 'LRC: ', downloadUrl
-			try:
-				req = urllib2.Request(downloadUrl)
-				response = urllib2.urlopen(req)
-				with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName + '.lrc', 'w') as lrcHandler:
-					lrcHandler.write(response.read())
-			except Exception, e:
-				print e.message
+			if platform.system() == 'Linux':
+				cmd = 'wget ' + downloadUrl + ' -O ' + GLOBAL_VARIABLE['savePath'] + \
+					'/' + musicName + '.lrc'
+				cmd = cmd.encode('utf-8')
+				os.system(cmd)
+			else:
+				try:
+					req = urllib2.Request(downloadUrl)
+					response = urllib2.urlopen(req)
+					with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName + '.lrc', 'w') \
+					as lrcHandler:
+						lrcHandler.write(response.read())
+				except Exception, e:
+					print e.message
 
 
 def getSearchResultNum(searchFirstPageResult):
