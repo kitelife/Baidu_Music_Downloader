@@ -118,12 +118,15 @@ def searchSingerMusic(singerName, album=False):
 def main():
 	album = False
 	dirname = ''
+	# 如果要下载专辑而不是单曲，则加-a选项
 	if '-a' in sys.argv:
 		album = True
+	# 如果加了-d选项，则该选项的后一个列表项即为存储音乐的父目录名
 	if '-d' in sys.argv:
 		dirname = sys.argv[sys.argv.index('-d') + 1]
 		if not dirname.endswith('/'):
 			dirname += '/'
+	# 命令行的第二个参数是歌手的姓名
 	singerName = sys.argv[1]
 	savePath = dirname + singerName.replace(' ', '_')
 	if not os.path.exists(savePath):
