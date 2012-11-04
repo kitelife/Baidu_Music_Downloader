@@ -52,7 +52,7 @@ def parseMusicList(musicListPageContent):
 		author_list = musicItem.find('span', attrs={'class' : 'author_list'})['title'].split(',')
 		if GLOBAL_VARIABLE['singerName'] in author_list:
 			music = musicItem.find('span', attrs={'class' : 'song-title'}).find('a')
-			musicTitle = music.text.strip().replace(' ', '_')
+			musicTitle = music.text.strip().replace("#", "").replace(' ', '_')
 			if not musicTitle in HAVEDOWNLOADED:
 				downloadMusic(musicTitle, music['href'].split('/')[-1])
 
@@ -94,7 +94,7 @@ def searchSingerMusic(singerName, album=False):
 	pageObject = requests.get(url)
 	if pageObject.status_code == 200:
 		if album:
-			totalNum = getSearchResultNum(pageObject.content)
+			totalNum = int(getSearchResultNum(pageObject.content))
 			parseAlbumList(pageObject.content)
 			start, size = 10, 10
 			while start < totalNum:
@@ -104,7 +104,7 @@ def searchSingerMusic(singerName, album=False):
 				parseAlbumList(pageObject.content)
 				start += size
 		else:
-			totalNum = getSearchResultNum(pageObject.content)
+			totalNum = int(getSearchResultNum(pageObject.content))
 			parseMusicList(pageObject.content)
 			start, size = 20, 20
 			while start < totalNum:
