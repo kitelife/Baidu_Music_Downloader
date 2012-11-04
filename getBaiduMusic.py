@@ -40,6 +40,25 @@ def downloadMusic(musicName, musicId):
 					print e.message
 
 
+def downloadLRC(musicName, musicId):
+	url = 'http://music.baidu.com/song/' + musicId + '/lyric'
+	lrcObject = requests.get(url)
+	if lrcObject.status_code == 200:
+		lrcSoup = BeautifulSoup(lrcObject.content)
+		downloadItem = lrcSoup.find('a', attrs={'class': 'down-lrc-btn'})
+		if downloadItem:
+			downloadUrl = downloadItem['href']
+			print 'LRC: ', downloadUrl
+			import urllib2
+			try:
+				req = urllib2.Request(downloadUrl)
+				response = urllib2.urlopen(req)
+				with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName + '.lrc', 'w') as lrcHandler:
+					lrcHandler.write(response.read())
+			except Exception, e:
+				print e.message
+
+
 def getSearchResultNum(searchFirstPageResult):
 	soup = BeautifulSoup(searchFirstPageResult)
 	return soup.find('span', attrs={'class': 'number'}).text
@@ -54,7 +73,9 @@ def parseMusicList(musicListPageContent):
 			music = musicItem.find('span', attrs={'class' : 'song-title'}).find('a')
 			musicTitle = music.text.strip().replace("#", "").replace(' ', '_')
 			if not musicTitle in HAVEDOWNLOADED:
-				downloadMusic(musicTitle, music['href'].split('/')[-1])
+				musicId = music['href'].split('/')[-1]
+				downloadMusic(musicTitle, musicId)
+				downloadLRC(musicTitle, musicId)
 
 
 def parseAlbumList(albumPageContent):
@@ -70,13 +91,15 @@ def parseAlbumList(albumPageContent):
 					musicName = music.text.strip().replace(' ', '_')
 					musicId = music['href'].replace('/song/', '')
 					downloadMusic(musicName, musicId)
+					downloadLRC(musicName, musicId)
 
 	soup = BeautifulSoup(albumPageContent)
 	albumList = soup.findAll('div', attrs={'class': 'title clearfix'})
 	for albumItem in albumList:
 		album = albumItem.find('a', attrs={'href': re.compile('/album/\d+$')})
-		albumName = album.text.replace('《'.decode('utf-8'), '').replace('》'.decode('utf-8'), '')
-		albumName = albumName.strip().replace(' ', '_')
+		albumName = album.text.strip().replace(' ', '_')
+		for punc in ['《', '》', '(', ')', '（', '）']:
+			albumName = albumName.replace(punc.decode('utf-8'), '')
 		albumUrl = 'http://music.baidu.com/' + album['href']
 		basePath = GLOBAL_VARIABLE['savePath']
 		GLOBAL_VARIABLE['savePath'] += '/' + albumName
