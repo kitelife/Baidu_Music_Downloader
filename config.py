@@ -7,6 +7,7 @@ singerList = ['蔡琴', '刘若英']
 
 for index, singer in enumerate(singerList):
 	singerList[index] = singer.decode('utf-8').encode(DEFAULT_ENCODING)
+
 # 音乐存储目录
 musicDir = '~/Music'
 
