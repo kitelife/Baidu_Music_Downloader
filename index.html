@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Baidu music downloader by youngsterxyf</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Baidu music downloader</h1>
+        <p></p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/youngsterxyf/Baidu_Music_Downloader" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/youngsterxyf/Baidu_Music_Downloader/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/youngsterxyf/Baidu_Music_Downloader/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>百度音乐下载器</h1>
+
+<p><strong>安装依赖</strong></p>
+
+<ul>
+<li><p>Python2.7解释器(Windows下需要设定环境变量，才能在cmd中使用python命令)</p></li>
+<li><p>安装库requests, beautifulsoup, gevent(使用python包管理器pip install或者easy_install，ubuntu下还可以使用apt-get install相应的库)</p></li>
+</ul><p><strong>使用方法(Linux下)</strong>：</p>
+
+<ul>
+<li>命令行输入：python getBaiduMusic.py 歌手姓名 [-a] [-d 音乐存储目录]</li>
+</ul><p>其中[]内的选项是可选的，歌手姓名是必须的，且必须紧接getBaiduMusic.py。选项-a是指定按专辑下载歌手的所有音乐，如果没有-a选项，则下载所有单曲</p>
+
+<ul>
+<li>如果想同时下载多个歌手的音乐，则可以先在文件config.py设定相关配置信息，然后执行：python piliangDownloader.py</li>
+</ul><p><strong>使用方法(Windows下)</strong>:</p>
+
+<p>与Linux下的使用方法一致，只是需要注意设定配置文件config.py中musicDir一项的值，默认值为linux下用户home目录中Music目录(~/Music)</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/youngsterxyf">youngsterxyf</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
