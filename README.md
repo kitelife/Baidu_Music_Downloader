@@ -3,7 +3,7 @@
 
 **安装依赖**
 
-- Python2.7解释器
+- Python2.7解释器(Windows下需要设定环境变量，才能在cmd中使用python命令)
 
 - 安装库requests, beautifulsoup, gevent(使用python包管理器pip install或者easy_install，ubuntu下还可以使用apt-get install相应的库)
 
