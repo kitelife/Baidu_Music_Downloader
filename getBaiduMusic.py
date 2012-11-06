@@ -3,11 +3,12 @@
 
 import sys
 import os
-import platform
 import requests
 import urllib2
 import re
+import platform
 from BeautifulSoup import BeautifulSoup
+from system_encoding import DEFAULT_ENCODING
 
 GLOBAL_VARIABLE = dict()
 HAVEDOWNLOADED = list()
@@ -23,16 +24,16 @@ def downloadMusic(musicName, musicId):
 			downloadUrl = downloadItem['href'].replace('/data/music/file?link=', '')
 			if platform.system() == 'Linux':
 				downloadCmd = 'wget ' + downloadUrl + ' -O ' + GLOBAL_VARIABLE['savePath'] + \
-					'/' + musicName + '.mp3'
-				downloadCmd = downloadCmd.encode('utf-8')
+					os.sep + musicName + '.mp3'
+				downloadCmd = downloadCmd.encode(DEFAULT_ENCODING)
 				os.system(downloadCmd)
 				HAVEDOWNLOADED.append(musicName)
 			else:
-				print downloadUrl
+				print musicName, downloadUrl
 				try:
 					req = urllib2.Request(downloadUrl)
 					response = urllib2.urlopen(req)
-					with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName +'.mp3', 'w') \
+					with open(GLOBAL_VARIABLE['savePath'] + os.sep + musicName +'.mp3', 'wb') \
 					as musicHandler:
 						musicHandler.write(response.read())
 					HAVEDOWNLOADED.append(musicName)
@@ -51,14 +52,14 @@ def downloadLRC(musicName, musicId):
 			print 'LRC: ', downloadUrl
 			if platform.system() == 'Linux':
 				cmd = 'wget ' + downloadUrl + ' -O ' + GLOBAL_VARIABLE['savePath'] + \
-					'/' + musicName + '.lrc'
-				cmd = cmd.encode('utf-8')
+					os.sep + musicName + '.lrc'
+				cmd = cmd.encode(DEFAULT_ENCODING)
 				os.system(cmd)
 			else:
 				try:
 					req = urllib2.Request(downloadUrl)
 					response = urllib2.urlopen(req)
-					with open(GLOBAL_VARIABLE['savePath'] + '/' + musicName + '.lrc', 'w') \
+					with open(GLOBAL_VARIABLE['savePath'] + os.sep + musicName + '.lrc', 'w') \
 					as lrcHandler:
 						lrcHandler.write(response.read())
 				except Exception, e:
@@ -108,7 +109,7 @@ def parseAlbumList(albumPageContent):
 			albumName = albumName.replace(punc.decode('utf-8'), '')
 		albumUrl = 'http://music.baidu.com/' + album['href']
 		basePath = GLOBAL_VARIABLE['savePath']
-		GLOBAL_VARIABLE['savePath'] += '/' + albumName
+		GLOBAL_VARIABLE['savePath'] += os.sep + albumName
 		if not os.path.exists(GLOBAL_VARIABLE['savePath']):
 			os.mkdir(GLOBAL_VARIABLE['savePath'])
 		downloadAlbum(albumUrl)
@@ -117,6 +118,7 @@ def parseAlbumList(albumPageContent):
 
 def searchSingerMusic(singerName, album=False):
 	url = 'http://music.baidu.com/search?key=' + singerName
+	print url
 	if album:
 		url = 'http://music.baidu.com/search/album?key=' + singerName
 
@@ -153,18 +155,19 @@ def main():
 	# 如果加了-d选项，则该选项的后一个列表项即为存储音乐的父目录名
 	if '-d' in sys.argv:
 		dirname = sys.argv[sys.argv.index('-d') + 1]
-		if not dirname.endswith('/'):
-			dirname += '/'
+		if not dirname.endswith(os.sep):
+			dirname += os.sep
 	# 命令行的第二个参数是歌手的姓名
 	singerName = sys.argv[1]
 	savePath = dirname + singerName.replace(' ', '_')
 	if not os.path.exists(savePath):
 		os.mkdir(savePath)
-	GLOBAL_VARIABLE['savePath'] = unicode(savePath, "utf-8")
-	GLOBAL_VARIABLE['singerName'] = unicode(singerName, 'utf-8')
 
+	GLOBAL_VARIABLE['savePath'] = unicode(savePath, DEFAULT_ENCODING)
+	GLOBAL_VARIABLE['singerName'] = unicode(singerName, DEFAULT_ENCODING)
+
+	singerName = singerName.decode(DEFAULT_ENCODING).encode('utf-8')
 	searchSingerMusic(singerName, album = album)
-
 
 if __name__ == '__main__':
 	main()
