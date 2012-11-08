@@ -4,5 +4,6 @@ import platform
 
 DEFAULT_ENCODING = 'utf-8'
 
-if platform.system() != 'Linux':
+system_type = platform.system()
+if system_type not in ['Linux', 'Darwin']:
 	DEFAULT_ENCODING = 'gbk'
