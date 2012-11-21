@@ -14,10 +14,15 @@ GLOBAL_VARIABLE = dict()
 HAVEDOWNLOADED = list()
 
 def downloadMusic(musicName, musicId):
+	
 	url = 'http://music.baidu.com/song/' + musicId + '/download'
 	print url
-	musicObject = requests.get(url)
-	if musicObject.status_code == 200:
+	musicObject = None
+	try:
+		musicObject = requests.get(url)
+	except Exception:
+		print 'musicObject: requests.get Error'
+	if musicObject and musicObject.status_code == 200:
 		musicSoup = BeautifulSoup(musicObject.content)
 		downloadItem = musicSoup.find('div', attrs={'class': 'operation clearfix'}).find('a')
 		if downloadItem['href']:
@@ -43,8 +48,12 @@ def downloadMusic(musicName, musicId):
 
 def downloadLRC(musicName, musicId):
 	url = 'http://music.baidu.com/song/' + musicId + '/lyric'
-	lrcObject = requests.get(url)
-	if lrcObject.status_code == 200:
+	lrcObject = None
+	try:
+		lrcObject = requests.get(url)
+	except Exception:
+		print 'lrcObject: requests.get Error'
+	if lrcObject and lrcObject.status_code == 200:
 		lrcSoup = BeautifulSoup(lrcObject.content)
 		downloadItem = lrcSoup.find('a', attrs={'class': 'down-lrc-btn'})
 		if downloadItem:
@@ -88,8 +97,12 @@ def parseMusicList(musicListPageContent):
 def parseAlbumList(albumPageContent):
 
 	def downloadAlbum(albumUrl):
-		albumObject = requests.get(albumUrl)
-		if albumObject.status_code == 200:
+		albumObject = None
+		try:
+			albumObject = requests.get(albumUrl)
+		except Exception:
+			print 'albumObject: requests.get Error'
+		if albumObject and albumObject.status_code == 200:
 			albumSoup = BeautifulSoup(albumObject.content)
 			albumItems = albumSoup.findAll('div', attrs={'class': 'song-item'})
 			for albumItem in albumItems:
@@ -121,9 +134,12 @@ def searchSingerMusic(singerName, album=False):
 	print url
 	if album:
 		url = 'http://music.baidu.com/search/album?key=' + singerName
-
-	pageObject = requests.get(url)
-	if pageObject.status_code == 200:
+	pageObject = None
+	try:
+		pageObject = requests.get(url)
+	except Exception:
+		print 'pageObject: requests.get Error'
+	if pageObject and pageObject.status_code == 200:
 		if album:
 			totalNum = int(getSearchResultNum(pageObject.content))
 			parseAlbumList(pageObject.content)
@@ -131,8 +147,13 @@ def searchSingerMusic(singerName, album=False):
 			while start < totalNum:
 				url = 'http://music.baidu.com/search/album?key=' + singerName + '&start=' + \
 					str(start) + '&size=' + str(size)
-				pageObject = requests.get(url)
-				parseAlbumList(pageObject.content)
+				pageObject = None
+				try:
+					pageObject = requests.get(url)
+				except Exception:
+					print 'pageObject: requests.get Error'
+				if pageObject and pageObject.status_code == 200:
+					parseAlbumList(pageObject.content)
 				start += size
 		else:
 			totalNum = int(getSearchResultNum(pageObject.content))
@@ -141,8 +162,13 @@ def searchSingerMusic(singerName, album=False):
 			while start < totalNum:
 				url = 'http://music.baidu.com/search/song?key=' + singerName + '&start=' + \
 					str(start) + '&size=' + str(size)
-				pageObject = requests.get(url)
-				parseMusicList(pageObject.content)
+				pageObject = None
+				try:
+					pageObject = requests.get(url)
+				except Exception:
+					print 'pageObject: requests.get Error'
+				if pageObject and pageObject.status_code == 200:
+					parseMusicList(pageObject.content)
 				start += size
 
 
