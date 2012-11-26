@@ -214,7 +214,7 @@ def _printResultAndGetInput(musicList):
 
 def main():
 
-	dirname = ''
+	dirname = '.'
 	# 如果加了-d选项，则该选项的后一个列表项即为存储音乐的父目录名
 	if '-d' in sys.argv:
 		dirname = sys.argv[sys.argv.index('-d') + 1]
