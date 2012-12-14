@@ -20,7 +20,7 @@
 
 - 与Linux下的使用方法一致，只是需要注意设定配置文件config.py中musicDir一项的值，默认值为linux下用户home目录中Music目录(~/Music)
 
-- Windows下，某些播放器显示出来的歌词可能是乱码，这时就需要对歌词进行转码，[这个小脚本](https://github.com/youngsterxyf/ToolsForMyself/blob/master/change_lrc_coding.py)可供使用。这个脚本会对指定目录下的所有.lrc扩展名的文件从utf-8编码转成gbk编码。
+- Windows下，某些播放器显示出来的歌词可能是乱码，这时就需要对歌词进行转码，[这个小脚本](https://github.com/youngsterxyf/ToolsForMyself/blob/master/change_lrc_coding.py)可供使用。这个脚本会对指定目录下的所有.lrc扩展名的文件从utf-8编码转成gbk编码。(注：该脚本依赖库chardet来检测文件的编码)
 
 **更新**
 
