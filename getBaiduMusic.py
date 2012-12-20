@@ -219,7 +219,7 @@ def main():
 	if '-d' in sys.argv:
 		dirname = sys.argv[sys.argv.index('-d') + 1]
 	if '-m' in sys.argv:
-		musicName = sys.argv[sys.argv.index('-m') + 1]
+		musicName = sys.argv[sys.argv.index('-m') + 1].decode(DEFAULT_ENCODING).encode('utf-8')
 		topTen = _getTopTenList(musicName)
 		userSelect = _printResultAndGetInput(topTen)
 		if userSelect in range(0, len(topTen)):
