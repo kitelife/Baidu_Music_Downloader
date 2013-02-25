@@ -106,7 +106,7 @@ def parseAlbumList(albumPageContent):
 			albumSoup = BeautifulSoup(albumObject.content)
 			albumItems = albumSoup.findAll('div', attrs={'class': 'song-item'})
 			for albumItem in albumItems:
-				music = albumItem.find('span', attrs={'class': 'song-title'}).find('a')
+				music = albumItem.find('span', attrs={'class': 'song-title '}).find('a')
 				if music:
 					musicName = music.text.strip().replace(' ', '_')
 					musicId = music['href'].replace('/song/', '')
