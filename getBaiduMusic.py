@@ -81,17 +81,17 @@ def getSearchResultNum(searchFirstPageResult):
 
 
 def parseMusicList(musicListPageContent):
-	soup = BeautifulSoup(musicListPageContent)
-	musicItemList = soup.findAll('div', attrs={'class': 'song-item clearfix'})
-	for musicItem in musicItemList:
-		author_list = musicItem.find('span', attrs={'class' : 'author_list'})['title'].split(',')
-		if GLOBAL_VARIABLE['singerName'] in author_list:
-			music = musicItem.find('span', attrs={'class' : 'song-title'}).find('a')
-			musicTitle = music.text.strip().replace("#", "").replace(' ', '_')
-			if not musicTitle in HAVEDOWNLOADED:
-				musicId = music['href'].split('/')[-1]
-				downloadMusic(musicTitle, musicId)
-				downloadLRC(musicTitle, musicId)
+    soup = BeautifulSoup(musicListPageContent)
+    musicItemList = soup.findAll('div', attrs={'class': 'song-item clearfix'})
+    for musicItem in musicItemList:
+        author_list = musicItem.find('span', attrs={'class': 'author_list'}).find('a')['title'].split(',')
+        if GLOBAL_VARIABLE['singerName'] in author_list:
+            music = musicItem.find('span', attrs={'class' : 'song-title'}).find('a')
+            musicTitle = music.text.strip().replace("#", "").replace(' ', '_')
+            if not musicTitle in HAVEDOWNLOADED:
+                musicId = music['href'].split('/')[-1]
+                downloadMusic(musicTitle, musicId)
+                downloadLRC(musicTitle, musicId)
 
 
 def parseAlbumList(albumPageContent):
@@ -173,34 +173,33 @@ def searchSingerMusic(singerName, album=False):
 
 def _getTopTenList(musicName):
 
-	topTenList = []
-	url = 'http://music.baidu.com/search?key=' + musicName
-	response = None
-	try:
-		response = requests.get(url)
-	except Exception:
-		print '_getTopTenList requests.get Error'
-	if response and response.status_code == 200:
-		responseSoup = BeautifulSoup(response.content)
-		songItemList = responseSoup.findAll('div', attrs={'class': 'song-item clearfix'})
-		if songItemList:
-			for songItem in songItemList:
-				titleItem = songItem.find('span', attrs={'class': 'song-title'})
-				a = titleItem.find('a')
-				if titleItem and a:
-					songId = a['href'].split('/')[-1]
-					songTitle = a.text
-					if a.find('em'):
-						songTitle = a.find('em').text
-				singerItem = songItem.find('span', attrs={'class': 'singer'}).find('a')
-				if singerItem and singerItem['title']:
-					singerList = singerItem['title'].split(',')
+    topTenList = []
+    albumName = ''
+    url = 'http://music.baidu.com/search?key=' + musicName
+    response = None
+    try:
+        response = requests.get(url)
+    except Exception:
+        print '_getTopTenList requests.get Error'
+    if response and response.status_code == 200:
+        responseSoup = BeautifulSoup(response.content)
+        songItemList = responseSoup.findAll('div', attrs={'class': 'song-item clearfix'})
+        if songItemList:
+            for songItem in songItemList:
+                titleItem = songItem.find('span', attrs={'class': 'song-title'})
+                a = titleItem.find('a')
+                if titleItem and a:
+                    songId = a['href'].split('/')[-1]
+                    songTitle = a.text
+                singerItem = songItem.find('span', attrs={'class': 'singer'}).find('a')
+                if singerItem and singerItem['title']:
+                    singerList = singerItem['title'].split(',')
 
-				albumItem = songItem.find('span', attrs={'class': 'album-title'})
-				if albumItem and albumItem.find('a'):
-					albumName = albumItem.find('a').text
-				topTenList.append([songId, songTitle, singerList, albumName])
-	return topTenList
+                albumItem = songItem.find('span', attrs={'class': 'album-title'})
+                if albumItem and albumItem.find('a'):
+                    albumName = albumItem.find('a').text
+                topTenList.append([songId, songTitle, singerList, albumName])
+    return topTenList
 
 def _printResultAndGetInput(musicList):
 	for index, music in enumerate(musicList):
