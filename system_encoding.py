@@ -2,8 +2,8 @@
 
 import platform
 
-DEFAULT_ENCODING = 'utf-8'
-
-system_type = platform.system()
-if system_type not in ['Linux', 'Darwin']:
-	DEFAULT_ENCODING = 'gbk'
+def get_platform_encoding():
+    platform_encoding = 'utf-8'
+    if platform.system() not in ['Linux', 'Darwin']:
+        platfrom_encoding = 'gbk'
+    return platform_encoding
