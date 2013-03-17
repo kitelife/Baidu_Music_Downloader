@@ -17,70 +17,69 @@ HAVEDOWNLOADED = list()
 
 
 def download_music(music_name, music_id):
-
-	url = 'http://music.baidu.com/song/' + music_id + '/download'
-	print url
-	music_object = None
-	try:
-		music_object = requests.get(url)
-	except Exception:
-		print 'music_object: requests.get Error'
-	if music_object and music_object.status_code == 200:
-		music_soup = BeautifulSoup(music_object.content)
-		download_item = music_soup.find('div', attrs={'class': 'operation clearfix'}).find('a')
-		if download_item['href']:
-			download_url = download_item['href'].replace('/data/music/file?link=', '')
-			if platform.system() == 'Linux':
-				download_cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
-					os.sep + music_name + '.mp3'
-				download_cmd = download_cmd.encode(platform_encoding)
-				os.system(download_cmd)
-				HAVEDOWNLOADED.append(music_name)
-			else:
-				print music_name, download_url
-				try:
-					req = urllib2.Request(download_url)
-					response = urllib2.urlopen(req)
-					with open(GLOBAL_VARIABLE['save_path'] + os.sep + music_name +'.mp3', 'wb') \
-					as music_handler:
-						music_handler.write(response.read())
-					HAVEDOWNLOADED.append(music_name)
-				except Exception, e:
-					print e.message
+    url = 'http://music.baidu.com/song/' + music_id + '/download'
+    print url
+    music_object = None
+    try:
+        music_object = requests.get(url)
+    except Exception:
+        print 'music_object: requests.get Error'
+    if music_object and music_object.status_code == 200:
+        music_soup = BeautifulSoup(music_object.content)
+        download_item = music_soup.find('div', attrs={'class': 'operation clearfix'}).find('a')
+        if download_item and download_item['href']:
+            download_url = download_item['href'].replace('/data/music/file?link=', '')
+            if platform.system() == 'Linux':
+                download_cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
+                    os.sep + music_name + '.mp3'
+                download_cmd = download_cmd.encode(platform_encoding)
+                os.system(download_cmd)
+                HAVEDOWNLOADED.append(music_name)
+            else:
+                print music_name, download_url
+                try:
+                    req = urllib2.Request(download_url)
+                    response = urllib2.urlopen(req)
+                    with open(GLOBAL_VARIABLE['save_path'] + os.sep + music_name +'.mp3', 'wb') \
+                    as music_handler:
+                        music_handler.write(response.read())
+                    HAVEDOWNLOADED.append(music_name)
+                except Exception, e:
+                    print e.message
 
 
 def download_lrc(music_name, music_id):
-	url = 'http://music.baidu.com/song/' + music_id + '/lyric'
-	lrc_object = None
-	try:
-		lrc_object = requests.get(url)
-	except Exception:
-		print 'lrc_object: requests.get Error'
-	if lrc_object and lrc_object.status_code == 200:
-		lrc_soup = BeautifulSoup(lrc_object.content)
-		download_item = lrc_soup.find('a', attrs={'class': 'down-lrc-btn'})
-		if download_item:
-			download_url = download_item['href']
-			print 'LRC: ', download_url
-			if platform.system() == 'Linux':
-				cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
-					os.sep + music_name + '.lrc'
-				cmd = cmd.encode(platform_encoding)
-				os.system(cmd)
-			else:
-				try:
-					req = urllib2.Request(download_url)
-					response = urllib2.urlopen(req)
-					with open(GLOBAL_VARIABLE['save_path'] + os.sep + music_name + '.lrc', 'w') \
-					as lrc_handler:
-						lrc_handler.write(response.read())
-				except Exception, e:
-					print e.message
+    url = 'http://music.baidu.com/song/' + music_id + '/lyric'
+    lrc_object = None
+    try:
+        lrc_object = requests.get(url)
+    except Exception:
+        print 'lrc_object: requests.get Error'
+    if lrc_object and lrc_object.status_code == 200:
+        lrc_soup = BeautifulSoup(lrc_object.content)
+        download_item = lrc_soup.find('a', attrs={'class': 'down-lrc-btn'})
+        if download_item:
+            download_url = download_item['href']
+            print 'LRC: ', download_url
+            if platform.system() == 'Linux':
+                cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
+                    os.sep + music_name + '.lrc'
+                cmd = cmd.encode(platform_encoding)
+                os.system(cmd)
+            else:
+                try:
+                    req = urllib2.Request(download_url)
+                    response = urllib2.urlopen(req)
+                    with open(GLOBAL_VARIABLE['save_path'] + os.sep + music_name + '.lrc', 'w') \
+                    as lrc_handler:
+                        lrc_handler.write(response.read())
+                except Exception, e:
+                    print e.message
 
 
 def get_searchresult_num(search_firstpage_result):
-	soup = BeautifulSoup(search_firstpage_result)
-	return soup.find('span', attrs={'class': 'number'}).text
+    soup = BeautifulSoup(search_firstpage_result)
+    return soup.find('span', attrs={'class': 'number'}).text
 
 
 def parse_music_list(musiclistpage_content):
@@ -98,85 +97,84 @@ def parse_music_list(musiclistpage_content):
 
 
 def parse_album_list(albumpage_content):
+    
+    def download_album(album_url):
+        album_object = None
+        try:
+            album_object = requests.get(album_url)
+        except Exception:
+            print 'album_object: requests.get Error'
+        if album_object and album_object.status_code == 200:
+            album_soup = BeautifulSoup(album_object.content)
+            album_items = album_soup.findAll('div', attrs={'class': 'song-item'})
+            for album_item in album_items:
+                music = album_item.find('span', attrs={'class': 'song-title '}).find('a')
+                if music:
+                    music_name = music.text.strip().replace(' ', '_')
+                    music_id = music['href'].replace('/song/', '')
+                    download_music(music_name, music_id)
+                    download_lrc(music_name, music_id)
 
-	def download_album(album_url):
-		album_object = None
-		try:
-			album_object = requests.get(album_url)
-		except Exception:
-			print 'album_object: requests.get Error'
-		if album_object and album_object.status_code == 200:
-			album_soup = BeautifulSoup(album_object.content)
-			album_items = album_soup.findAll('div', attrs={'class': 'song-item'})
-			for album_item in album_items:
-				music = album_item.find('span', attrs={'class': 'song-title '}).find('a')
-				if music:
-					music_name = music.text.strip().replace(' ', '_')
-					music_id = music['href'].replace('/song/', '')
-					download_music(music_name, music_id)
-					download_lrc(music_name, music_id)
-
-	soup = BeautifulSoup(albumpage_content)
-	albumList = soup.findAll('div', attrs={'class': 'title clearfix'})
-	for album_item in albumList:
-		album = album_item.find('a', attrs={'href': re.compile('/album/\d+$')})
-		album_name = album.text.strip().replace(' ', '_')
-		for punc in ['《', '》', '(', ')', '（', '）']:
-			album_name = album_name.replace(punc.decode('utf-8'), '')
-		album_url = 'http://music.baidu.com/' + album['href']
-		base_path = GLOBAL_VARIABLE['save_path']
-		GLOBAL_VARIABLE['save_path'] += os.sep + album_name
-		if not os.path.exists(GLOBAL_VARIABLE['save_path']):
-			os.mkdir(GLOBAL_VARIABLE['save_path'])
-		download_album(album_url)
-		GLOBAL_VARIABLE['save_path'] = base_path
+    soup = BeautifulSoup(albumpage_content)
+    albumList = soup.findAll('div', attrs={'class': 'title clearfix'})
+    for album_item in albumList:
+        album = album_item.find('a', attrs={'href': re.compile('/album/\d+$')})
+        album_name = album.text.strip().replace(' ', '_')
+        for punc in ['《', '》', '(', ')', '（', '）']:
+            album_name = album_name.replace(punc.decode('utf-8'), '')
+        album_url = 'http://music.baidu.com/' + album['href']
+        base_path = GLOBAL_VARIABLE['save_path']
+        GLOBAL_VARIABLE['save_path'] += os.sep + album_name
+        if not os.path.exists(GLOBAL_VARIABLE['save_path']):
+            os.mkdir(GLOBAL_VARIABLE['save_path'])
+        download_album(album_url)
+        GLOBAL_VARIABLE['save_path'] = base_path
 
 
 def search_singer_music(singer_name, album=False):
-	url = 'http://music.baidu.com/search?key=' + singer_name
-	print url
-	if album:
-		url = 'http://music.baidu.com/search/album?key=' + singer_name
-	page_object = None
-	try:
-		page_object = requests.get(url)
-	except Exception:
-		print 'page_object: requests.get Error'
-	if page_object and page_object.status_code == 200:
-		if album:
-			totalNum = int(get_searchresult_num(page_object.content))
-			parse_album_list(page_object.content)
-			start, size = 10, 10
-			while start < totalNum:
-				url = 'http://music.baidu.com/search/album?key=' + singer_name + '&start=' + \
-					str(start) + '&size=' + str(size)
-				page_object = None
-				try:
-					page_object = requests.get(url)
-				except Exception:
-					print 'page_object: requests.get Error'
-				if page_object and page_object.status_code == 200:
-					parse_album_list(page_object.content)
-				start += size
-		else:
-			totalNum = int(get_searchresult_num(page_object.content))
-			parse_music_list(page_object.content)
-			start, size = 20, 20
-			while start < totalNum:
-				url = 'http://music.baidu.com/search/song?key=' + singer_name + '&start=' + \
-					str(start) + '&size=' + str(size)
-				page_object = None
-				try:
-					page_object = requests.get(url)
-				except Exception:
-					print 'page_object: requests.get Error'
-				if page_object and page_object.status_code == 200:
-					parse_music_list(page_object.content)
-				start += size
+    url = 'http://music.baidu.com/search?key=' + singer_name
+    print url
+    if album:
+        url = 'http://music.baidu.com/search/album?key=' + singer_name
+    page_object = None
+    try:
+        page_object = requests.get(url)
+    except Exception:
+        print 'page_object: requests.get Error'
+    if page_object and page_object.status_code == 200:
+        if album:
+            totalNum = int(get_searchresult_num(page_object.content))
+            parse_album_list(page_object.content)
+            start, size = 10, 10
+            while start < totalNum:
+                url = 'http://music.baidu.com/search/album?key=' + singer_name + '&start=' + \
+                    str(start) + '&size=' + str(size)
+                page_object = None
+                try:
+                    page_object = requests.get(url)
+                except Exception:
+                    print 'page_object: requests.get Error'
+                if page_object and page_object.status_code == 200:
+                    parse_album_list(page_object.content)
+                start += size
+        else:
+            totalNum = int(get_searchresult_num(page_object.content))
+            parse_music_list(page_object.content)
+            start, size = 20, 20
+            while start < totalNum:
+                url = 'http://music.baidu.com/search/song?key=' + singer_name + '&start=' + \
+                    str(start) + '&size=' + str(size)
+                page_object = None
+                try:
+                    page_object = requests.get(url)
+                except Exception:
+                    print 'page_object: requests.get Error'
+                if page_object and page_object.status_code == 200:
+                    parse_music_list(page_object.content)
+                start += size
 
 
 def _get_topten_list(music_name):
-
     topten_list = []
     album_name = ''
     url = 'http://music.baidu.com/search?key=' + music_name
@@ -207,14 +205,14 @@ def _get_topten_list(music_name):
 
 
 def _print_result_get_entry(music_list):
-	for index, music in enumerate(music_list):
-		print index,'\t', music[1], '\t',
-		for singer in music[2]:
-			print singer,
-		print '\t',
-		print music[3]
-	select = input('Please input a number to select music: ')
-	return int(select)
+    for index, music in enumerate(music_list):
+        print index,'\t', music[1], '\t',
+        for singer in music[2]:
+            print singer,
+        print '\t',
+        print music[3]
+    select = input('Please input a number to select music: ')
+    return int(select)
 
 
 def get_parser():
@@ -252,7 +250,6 @@ def main():
             download_music(song_title+'-'+singer_str, selected_item[0])
             download_lrc(song_title+'-'+singer_str, selected_item[0])
     else:
-        # 命令行的第二个参数是歌手的姓名
         singer_name = args['singer']
         print singer_name
         if not dirname.endswith(os.sep):
