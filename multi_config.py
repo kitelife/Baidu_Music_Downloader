@@ -5,7 +5,7 @@ from system_encoding import get_platform_encoding
 platform_encoding = get_platform_encoding()
 
 # 歌手姓名列表
-singer_list = ['蔡琴', '刘若英']
+singer_list = ['王菲', '阿桑']
 
 for index, singer in enumerate(singer_list):
 	singer_list[index] = singer.decode('utf-8').encode(platform_encoding)

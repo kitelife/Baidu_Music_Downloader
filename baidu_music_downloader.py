@@ -27,8 +27,9 @@ def download_music(music_name, music_id):
     if music_object and music_object.status_code == 200:
         music_soup = BeautifulSoup(music_object.content)
         download_item = music_soup.find('div', attrs={'class': 'operation clearfix'}).find('a')
-        if download_item and download_item['href']:
-            download_url = download_item['href'].replace('/data/music/file?link=', '')
+        download_href = download_item.get('href', None)
+        if download_item and download_href:
+            download_url = download_href.replace('/data/music/file?link=', '')
             if platform.system() == 'Linux':
                 download_cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
                     os.sep + music_name + '.mp3'
@@ -58,8 +59,8 @@ def download_lrc(music_name, music_id):
     if lrc_object and lrc_object.status_code == 200:
         lrc_soup = BeautifulSoup(lrc_object.content)
         download_item = lrc_soup.find('a', attrs={'class': 'down-lrc-btn'})
-        if download_item:
-            download_url = download_item['href']
+        download_url = download_item.get('href', None)
+        if download_item and download_url:
             print 'LRC: ', download_url
             if platform.system() == 'Linux':
                 cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
@@ -109,9 +110,10 @@ def parse_album_list(albumpage_content):
             album_items = album_soup.findAll('div', attrs={'class': 'song-item'})
             for album_item in album_items:
                 music = album_item.find('span', attrs={'class': 'song-title '}).find('a')
-                if music:
+                music_href = music.get('href', None)
+                if music and music_href:
                     music_name = music.text.strip().replace(' ', '_')
-                    music_id = music['href'].replace('/song/', '')
+                    music_id = music_href.replace('/song/', '')
                     download_music(music_name, music_id)
                     download_lrc(music_name, music_id)
 
@@ -185,16 +187,17 @@ def _get_topten_list(music_name):
         print '_get_topten_list requests.get Error'
     if response and response.status_code == 200:
         responseSoup = BeautifulSoup(response.content)
-        song_itemList = responseSoup.findAll('div', attrs={'class': 'song-item clearfix'})
-        if song_itemList:
-            for song_item in song_itemList:
-                titleItem = song_item.find('span', attrs={'class': 'song-title'})
-                a = titleItem.find('a')
-                if titleItem and a:
+        songitem_list = responseSoup.findAll('div', attrs={'class': 'song-item clearfix'})
+        singer_list = []
+        if songitem_list:
+            for song_item in songitem_list:
+                title_item = song_item.find('span', attrs={'class': 'song-title'})
+                a = title_item.find('a')
+                if title_item and a:
                     song_id = a['href'].split('/')[-1]
                     song_title = a.text
                 singer_item = song_item.find('span', attrs={'class': 'singer'}).find('a')
-                if singer_item and singer_item['title']:
+                if singer_item and singer_item.get('title', None):
                     singer_list = singer_item['title'].split(',')
 
                 album_item = song_item.find('span', attrs={'class': 'album-title'})
@@ -228,7 +231,6 @@ def get_parser():
 def main():
     arg_parser = get_parser()
     args = vars(arg_parser.parse_args())
-    print args	
     if not (args['singer'] or args['music']):
         arg_parser.print_usage()
         return
@@ -251,7 +253,6 @@ def main():
             download_lrc(song_title+'-'+singer_str, selected_item[0])
     else:
         singer_name = args['singer']
-        print singer_name
         if not dirname.endswith(os.sep):
             dirname += os.sep
         save_path = dirname + singer_name.replace(' ', '_')
