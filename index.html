@@ -9,22 +9,25 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
   <body>
     <div class="wrapper">
-      <header class="without-description">
-        <h1>Baidu music downloader</h1>
-        <p></p>
-        <p class="view"><a href="https://github.com/youngsterxyf/Baidu_Music_Downloader">View the Project on GitHub <small>youngsterxyf/Baidu_Music_Downloader</small></a></p>
+      <header>
+        <h1 class="header">Baidu music downloader</h1>
+        <p class="header"></p>
+
         <ul>
-          <li><a href="https://github.com/youngsterxyf/Baidu_Music_Downloader/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/youngsterxyf/Baidu_Music_Downloader/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/youngsterxyf/Baidu_Music_Downloader">View On <strong>GitHub</strong></a></li>
+          <li class="download"><a class="buttons" href="https://github.com/youngsterxyf/Baidu_Music_Downloader/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/youngsterxyf/Baidu_Music_Downloader/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/youngsterxyf/Baidu_Music_Downloader">View On GitHub</a></li>
         </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/youngsterxyf">youngsterxyf</a></p>
+
+
       </header>
       <section>
         <h1>百度音乐下载器</h1>
@@ -37,28 +40,43 @@
 </ul><p><strong>使用方法(Linux下)</strong>：</p>
 
 <ul>
-<li>命令行输入：python getBaiduMusic.py 歌手姓名 [-a] [-d 音乐存储目录]</li>
-</ul><p>其中方括号内的选项是可选的，歌手姓名是必须的，且必须紧接getBaiduMusic.py。选项-a是指定按专辑下载歌手的所有音乐，如果没有-a选项，则下载所有单曲</p>
+<li>根据歌手名下载：python baidu_music_downloader.py -s 歌手姓名 [-a] [-d 音乐存储目录]</li>
+</ul><p>其中方括号内的选项是可选的，歌手姓名是必须的。选项-a是指定按专辑下载歌手的所有音乐，如果没有-a选项，则下载所有单曲</p>
 
 <ul>
-<li>如果想同时下载多个歌手的音乐，则可以先在文件config.py设定相关配置信息，然后执行：python piliangDownloader.py</li>
+<li>根据歌名下载：python baidu_music_downloader.py -m 歌名 [-d 音乐存储目录]</li>
+</ul><p>执行该命令后，会显示一个歌曲列表供用户选择，输入某行前面的数字编号并回车，就会下载那首歌曲。</p>
+
+<ul>
+<li>如果想同时下载多个歌手的音乐，则可以先在文件multi_config.py设定相关配置信息，然后执行：python multi_downloader.py</li>
 </ul><p><strong>使用方法(Windows下)</strong>:</p>
 
 <ul>
-<li><p>与Linux下的使用方法一致，只是需要注意设定配置文件config.py中musicDir一项的值，默认值为linux下用户home目录中Music目录(~/Music)</p></li>
+<li><p>与Linux下的使用方法一致，只是需要注意设定配置文件multi_config.py中music_dir一项的值，默认值为linux下用户home目录中Music目录(~/Music)</p></li>
 <li><p>Windows下，某些播放器显示出来的歌词可能是乱码，这时就需要对歌词进行转码，<a href="https://github.com/youngsterxyf/ToolsForMyself/blob/master/change_lrc_coding.py">这个小脚本</a>可供使用。这个脚本会对指定目录下的所有.lrc扩展名的文件从utf-8编码转成gbk编码。(注：该脚本依赖库chardet来检测文件的编码)</p></li>
 </ul><p><strong>更新</strong></p>
 
 <ul>
-<li>2012-11-26：支持单曲下载--- python getBaiduMusic.py -m 歌曲名 [-d 音乐存储目录]</li>
+<li>2013-03-17：重构部分代码</li>
+<li>2013-03-01：百度音乐网站修改了一些前端代码，导致程序失效，修正。</li>
+<li>2012-11-26：支持单曲下载</li>
 </ul>
       </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/youngsterxyf">youngsterxyf</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-39362464-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
