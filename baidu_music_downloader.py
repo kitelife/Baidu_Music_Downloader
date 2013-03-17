@@ -176,7 +176,7 @@ def search_singer_music(singer_name, album=False):
                 start += size
 
 
-def _get_topten_list(music_name):
+def get_topten_list(music_name):
     topten_list = []
     album_name = ''
     url = 'http://music.baidu.com/search?key=' + music_name
@@ -184,7 +184,7 @@ def _get_topten_list(music_name):
     try:
         response = requests.get(url)
     except Exception:
-        print '_get_topten_list requests.get Error'
+        print 'get_topten_list requests.get Error'
     if response and response.status_code == 200:
         responseSoup = BeautifulSoup(response.content)
         songitem_list = responseSoup.findAll('div', attrs={'class': 'song-item clearfix'})
@@ -207,7 +207,7 @@ def _get_topten_list(music_name):
     return topten_list
 
 
-def _print_result_get_entry(music_list):
+def select_entry(music_list):
     for index, music in enumerate(music_list):
         print index,'\t', music[1], '\t',
         for singer in music[2]:
@@ -239,8 +239,8 @@ def main():
     
     if args['music']:
         music_name = args['music'].decode(platform_encoding).encode('utf-8')
-        top_ten = _get_topten_list(music_name)
-        user_select = _print_result_get_entry(top_ten)
+        top_ten = get_topten_list(music_name)
+        user_select = select_entry(top_ten)
         if user_select in range(0, len(top_ten)):
             save_path = dirname
             if not os.path.exists(save_path):
