@@ -25,9 +25,13 @@ def download_music(music_name, music_id):
     except Exception:
         print 'music_object: requests.get Error'
     if music_object and music_object.status_code == 200:
+        download_item = None
         music_soup = BeautifulSoup(music_object.content)
-        download_item = music_soup.find('div', attrs={'class': 'operation clearfix'}).find('a')
-        download_href = download_item.get('href', None)
+        div_for_download = music_soup.find('div', attrs={'class': 'operation clearfix'})
+        if div_for_download:
+            download_item = div_for_download.find('a')
+        if download_item:
+            download_href = download_item.get('href', None)
         if download_item and download_href:
             download_url = download_href.replace('/data/music/file?link=', '')
             if platform.system() == 'Linux':
@@ -82,7 +86,12 @@ def download_lrc(music_name, music_id):
 
 def get_searchresult_num(search_firstpage_result):
     soup = BeautifulSoup(search_firstpage_result)
-    return soup.find('span', attrs={'class': 'number'}).text
+    result_num_ele = soup.find('span', attrs={'class': 'number'})
+    if result_num_ele:
+        print result_num_ele.text
+        return result_num_ele.text
+    else:
+        return 0
 
 
 def parse_music_list(musiclistpage_content):
@@ -133,7 +142,7 @@ def parse_album_list(albumpage_content):
         base_path = GLOBAL_VARIABLE['save_path']
         GLOBAL_VARIABLE['save_path'] += os.sep + album_name
         if not os.path.exists(GLOBAL_VARIABLE['save_path']):
-            os.mkdir(GLOBAL_VARIABLE['save_path'])
+            os.mkdir(GLOBAL_VARIABLE['save_path'].encoding(platform_encoding))
         download_album(album_url)
         GLOBAL_VARIABLE['save_path'] = base_path
 
@@ -264,8 +273,8 @@ def main():
         if not os.path.exists(save_path):
             os.mkdir(save_path)
 
-        GLOBAL_VARIABLE['save_path'] = unicode(save_path, platform_encoding)
-        GLOBAL_VARIABLE['singer_name'] = unicode(singer_name, platform_encoding)
+        GLOBAL_VARIABLE['save_path'] = save_path.decode(platform_encoding)
+        GLOBAL_VARIABLE['singer_name'] = singer_name.decode(platform_encoding)
 
         singer_name = singer_name.decode(platform_encoding).encode('utf-8')
         search_singer_music(singer_name, album = args['album'])
