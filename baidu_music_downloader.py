@@ -153,20 +153,20 @@ def parse_album_list(albumpage_content):
 
 def search_singer_music(singer_name, album=False):
     url = 'http://music.baidu.com/search?key=' + singer_name
-    print url
     if album:
         url = 'http://music.baidu.com/search/album?key=' + singer_name
     page_object = None
     try:
+        print url
         page_object = requests.get(url)
     except Exception:
         print 'page_object: requests.get Error'
     if page_object and page_object.status_code == 200:
         if album:
-            totalNum = int(get_searchresult_num(page_object.content))
+            total_num = int(get_searchresult_num(page_object.content))
             parse_album_list(page_object.content)
             start, size = 10, 10
-            while start < totalNum:
+            while start < total_num:
                 url = 'http://music.baidu.com/search/album?key=' + singer_name + '&start=' + \
                     str(start) + '&size=' + str(size)
                 page_object = None
@@ -178,10 +178,10 @@ def search_singer_music(singer_name, album=False):
                     parse_album_list(page_object.content)
                 start += size
         else:
-            totalNum = int(get_searchresult_num(page_object.content))
+            total_num = int(get_searchresult_num(page_object.content))
             parse_music_list(page_object.content)
             start, size = 20, 20
-            while start < totalNum:
+            while start < total_num:
                 url = 'http://music.baidu.com/search/song?key=' + singer_name + '&start=' + \
                     str(start) + '&size=' + str(size)
                 page_object = None
