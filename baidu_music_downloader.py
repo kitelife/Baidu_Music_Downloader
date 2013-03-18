@@ -58,8 +58,10 @@ def download_lrc(music_name, music_id):
         print 'lrc_object: requests.get Error'
     if lrc_object and lrc_object.status_code == 200:
         lrc_soup = BeautifulSoup(lrc_object.content)
+        download_url = None
         download_item = lrc_soup.find('a', attrs={'class': 'down-lrc-btn'})
-        download_url = download_item.get('href', None)
+        if download_item:
+            download_url = download_item.get('href', None)
         if download_item and download_url:
             print 'LRC: ', download_url
             if platform.system() == 'Linux':
@@ -87,7 +89,10 @@ def parse_music_list(musiclistpage_content):
     soup = BeautifulSoup(musiclistpage_content)
     musicitem_list = soup.findAll('div', attrs={'class': 'song-item clearfix'})
     for music_item in musicitem_list:
-        author_list = music_item.find('span', attrs={'class': 'author_list'}).find('a')['title'].split(',')
+        author_list = []
+        author_list_ele = music_item.find('span', attrs={'class': 'author_list'})
+        if author_list_ele:
+            author_list = author_list_ele.get('title', '').split(',')
         if GLOBAL_VARIABLE['singer_name'] in author_list:
             music = music_item.find('span', attrs={'class' : 'song-title'}).find('a')
             music_title = music.text.strip().replace("#", "").replace(' ', '_')
