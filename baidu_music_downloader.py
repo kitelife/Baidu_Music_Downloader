@@ -38,6 +38,7 @@ def download_music(music_name, music_id):
                 download_cmd = 'wget ' + download_url + ' -O ' + GLOBAL_VARIABLE['save_path'] + \
                     os.sep + music_name + '.mp3'
                 download_cmd = download_cmd.encode(platform_encoding)
+                print download_cmd
                 os.system(download_cmd)
                 HAVEDOWNLOADED.append(music_name)
             else:
@@ -105,8 +106,11 @@ def parse_music_list(musiclistpage_content):
         if GLOBAL_VARIABLE['singer_name'] in author_list:
             music = music_item.find('span', attrs={'class' : 'song-title'}).find('a')
             music_title = music.text.strip().replace("#", "").replace(' ', '_')
+            for punc in ['《', '》', '(', ')', '（', '）', '/']:
+                music_title = music_title.replace(punc.decode('utf-8'), '')
             if not music_title in HAVEDOWNLOADED:
                 music_id = music['href'].split('/')[-1]
+                print music_title
                 download_music(music_title, music_id)
                 download_lrc(music_title, music_id)
 
@@ -132,17 +136,17 @@ def parse_album_list(albumpage_content):
                     download_lrc(music_name, music_id)
 
     soup = BeautifulSoup(albumpage_content)
-    albumList = soup.findAll('div', attrs={'class': 'title clearfix'})
-    for album_item in albumList:
+    album_list = soup.findAll('div', attrs={'class': 'title clearfix'})
+    for album_item in album_list:
         album = album_item.find('a', attrs={'href': re.compile('/album/\d+$')})
         album_name = album.text.strip().replace(' ', '_')
-        for punc in ['《', '》', '(', ')', '（', '）']:
+        for punc in ['《', '》', '(', ')', '（', '）', '/']:
             album_name = album_name.replace(punc.decode('utf-8'), '')
         album_url = 'http://music.baidu.com/' + album['href']
         base_path = GLOBAL_VARIABLE['save_path']
         GLOBAL_VARIABLE['save_path'] += os.sep + album_name
         if not os.path.exists(GLOBAL_VARIABLE['save_path']):
-            os.mkdir(GLOBAL_VARIABLE['save_path'].encoding(platform_encoding))
+            os.mkdir(GLOBAL_VARIABLE['save_path'].encode(platform_encoding))
         download_album(album_url)
         GLOBAL_VARIABLE['save_path'] = base_path
 
