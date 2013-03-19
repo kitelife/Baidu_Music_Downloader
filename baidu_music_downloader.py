@@ -214,7 +214,7 @@ def get_topten_list(music_name):
                 if title_item and a:
                     song_id = a['href'].split('/')[-1]
                     song_title = a.text
-                singer_item = song_item.find('span', attrs={'class': 'singer'}).find('a')
+                singer_item = song_item.find('span', attrs={'class': 'author_list'})
                 if singer_item and singer_item.get('title', None):
                     singer_list = singer_item['title'].split(',')
 
