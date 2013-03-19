@@ -12,6 +12,8 @@ from system_encoding import get_platform_encoding
 
 platform_encoding = get_platform_encoding()
 
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1309.0 Safari/537.17'
+
 GLOBAL_VARIABLE = dict()
 HAVEDOWNLOADED = list()
 
@@ -21,7 +23,7 @@ def download_music(music_name, music_id):
     print url
     music_object = None
     try:
-        music_object = requests.get(url)
+        music_object = requests.get(url, headers={'User-Agent': USER_AGENT})
     except Exception:
         print 'music_object: requests.get Error'
     if music_object and music_object.status_code == 200:
@@ -58,7 +60,7 @@ def download_lrc(music_name, music_id):
     url = 'http://music.baidu.com/song/' + music_id + '/lyric'
     lrc_object = None
     try:
-        lrc_object = requests.get(url)
+        lrc_object = requests.get(url, headers={'User-Agent': USER_AGENT})
     except Exception:
         print 'lrc_object: requests.get Error'
     if lrc_object and lrc_object.status_code == 200:
@@ -106,7 +108,7 @@ def parse_music_list(musiclistpage_content):
         if GLOBAL_VARIABLE['singer_name'] in author_list:
             music = music_item.find('span', attrs={'class' : 'song-title'}).find('a')
             music_title = music.text.strip().replace("#", "").replace(' ', '_')
-            for punc in ['《', '》', '(', ')', '（', '）', '/']:
+            for punc in ['《', '》', '(', ')', '（', '）', '/', '&']:
                 music_title = music_title.replace(punc.decode('utf-8'), '')
             if not music_title in HAVEDOWNLOADED:
                 music_id = music['href'].split('/')[-1]
@@ -120,7 +122,7 @@ def parse_album_list(albumpage_content):
     def download_album(album_url):
         album_object = None
         try:
-            album_object = requests.get(album_url)
+            album_object = requests.get(album_url, headers={'User-Agent': USER_AGENT})
         except Exception:
             print 'album_object: requests.get Error'
         if album_object and album_object.status_code == 200:
@@ -140,7 +142,7 @@ def parse_album_list(albumpage_content):
     for album_item in album_list:
         album = album_item.find('a', attrs={'href': re.compile('/album/\d+$')})
         album_name = album.text.strip().replace(' ', '_')
-        for punc in ['《', '》', '(', ')', '（', '）', '/']:
+        for punc in ['《', '》', '(', ')', '（', '）', '/', '&']:
             album_name = album_name.replace(punc.decode('utf-8'), '')
         album_url = 'http://music.baidu.com/' + album['href']
         base_path = GLOBAL_VARIABLE['save_path']
@@ -158,7 +160,7 @@ def search_singer_music(singer_name, album=False):
     page_object = None
     try:
         print url
-        page_object = requests.get(url)
+        page_object = requests.get(url, headers={'User-Agent': USER_AGENT})
     except Exception:
         print 'page_object: requests.get Error'
     if page_object and page_object.status_code == 200:
@@ -171,7 +173,7 @@ def search_singer_music(singer_name, album=False):
                     str(start) + '&size=' + str(size)
                 page_object = None
                 try:
-                    page_object = requests.get(url)
+                    page_object = requests.get(url, headers={'User-Agent': USER_AGENT})
                 except Exception:
                     print 'page_object: requests.get Error'
                 if page_object and page_object.status_code == 200:
@@ -186,7 +188,7 @@ def search_singer_music(singer_name, album=False):
                     str(start) + '&size=' + str(size)
                 page_object = None
                 try:
-                    page_object = requests.get(url)
+                    page_object = requests.get(url, headers={'User-Agent': USER_AGENT})
                 except Exception:
                     print 'page_object: requests.get Error'
                 if page_object and page_object.status_code == 200:
@@ -200,7 +202,7 @@ def get_topten_list(music_name):
     url = 'http://music.baidu.com/search?key=' + music_name
     response = None
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers={'User-Agent': USER_AGENT})
     except Exception:
         print 'get_topten_list requests.get Error'
     if response and response.status_code == 200:
