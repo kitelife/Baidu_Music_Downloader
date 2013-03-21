@@ -12,10 +12,16 @@ from system_encoding import get_platform_encoding
 
 platform_encoding = get_platform_encoding()
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1309.0 Safari/537.17'
 
 GLOBAL_VARIABLE = dict()
 HAVEDOWNLOADED = list()
+
+
+def filter_special_char(string):
+    string = string.strip()
+    for punc in ['《', '》', '(', ')', '（', '）', '/', '&', ' ', '"', '\'', '#']:
+        string = string.replace(punc.decode('utf-8'), '_')
+    return string
 
 
 def download_music(music_name, music_id):
@@ -23,7 +29,7 @@ def download_music(music_name, music_id):
     print url
     music_object = None
     try:
-        music_object = requests.get(url, headers={'User-Agent': USER_AGENT})
+        music_object = requests.get(url)
     except Exception:
         print 'music_object: requests.get Error'
     if music_object and music_object.status_code == 200:
@@ -60,7 +66,7 @@ def download_lrc(music_name, music_id):
     url = 'http://music.baidu.com/song/' + music_id + '/lyric'
     lrc_object = None
     try:
-        lrc_object = requests.get(url, headers={'User-Agent': USER_AGENT})
+        lrc_object = requests.get(url)
     except Exception:
         print 'lrc_object: requests.get Error'
     if lrc_object and lrc_object.status_code == 200:
@@ -107,9 +113,8 @@ def parse_music_list(musiclistpage_content):
             author_list = author_list_ele.get('title', '').split(',')
         if GLOBAL_VARIABLE['singer_name'] in author_list:
             music = music_item.find('span', attrs={'class' : 'song-title'}).find('a')
-            music_title = music.text.strip().replace("#", "").replace(' ', '_')
-            for punc in ['《', '》', '(', ')', '（', '）', '/', '&']:
-                music_title = music_title.replace(punc.decode('utf-8'), '')
+            music_title = music.text.strip()
+            music_title = filter_special_char(music_title)
             if not music_title in HAVEDOWNLOADED:
                 music_id = music['href'].split('/')[-1]
                 print music_title
@@ -122,7 +127,7 @@ def parse_album_list(albumpage_content):
     def download_album(album_url):
         album_object = None
         try:
-            album_object = requests.get(album_url, headers={'User-Agent': USER_AGENT})
+            album_object = requests.get(album_url)
         except Exception:
             print 'album_object: requests.get Error'
         if album_object and album_object.status_code == 200:
@@ -132,7 +137,8 @@ def parse_album_list(albumpage_content):
                 music = album_item.find('span', attrs={'class': 'song-title '}).find('a')
                 music_href = music.get('href', None)
                 if music and music_href:
-                    music_name = music.text.strip().replace(' ', '_')
+                    music_name = music.text.strip()
+                    music_name = filter_special_char(music_name)
                     music_id = music_href.replace('/song/', '')
                     download_music(music_name, music_id)
                     download_lrc(music_name, music_id)
@@ -141,9 +147,8 @@ def parse_album_list(albumpage_content):
     album_list = soup.findAll('div', attrs={'class': 'title clearfix'})
     for album_item in album_list:
         album = album_item.find('a', attrs={'href': re.compile('/album/\d+$')})
-        album_name = album.text.strip().replace(' ', '_')
-        for punc in ['《', '》', '(', ')', '（', '）', '/', '&']:
-            album_name = album_name.replace(punc.decode('utf-8'), '')
+        album_name = album.text.strip()
+        album_name = filter_special_char(album_name)
         album_url = 'http://music.baidu.com/' + album['href']
         base_path = GLOBAL_VARIABLE['save_path']
         GLOBAL_VARIABLE['save_path'] += os.sep + album_name
@@ -160,9 +165,10 @@ def search_singer_music(singer_name, album=False):
     page_object = None
     try:
         print url
-        page_object = requests.get(url, headers={'User-Agent': USER_AGENT})
-    except Exception:
-        print 'page_object: requests.get Error'
+        page_object = requests.get(url)
+    except Exception, e:
+        print e.message
+        #print 'page_object: requests.get Error'
     if page_object and page_object.status_code == 200:
         if album:
             total_num = int(get_searchresult_num(page_object.content))
@@ -173,9 +179,10 @@ def search_singer_music(singer_name, album=False):
                     str(start) + '&size=' + str(size)
                 page_object = None
                 try:
-                    page_object = requests.get(url, headers={'User-Agent': USER_AGENT})
-                except Exception:
-                    print 'page_object: requests.get Error'
+                    page_object = requests.get(url)
+                except Exception, e:
+                    print e.message
+                    #print 'page_object: requests.get Error'
                 if page_object and page_object.status_code == 200:
                     parse_album_list(page_object.content)
                 start += size
@@ -188,7 +195,7 @@ def search_singer_music(singer_name, album=False):
                     str(start) + '&size=' + str(size)
                 page_object = None
                 try:
-                    page_object = requests.get(url, headers={'User-Agent': USER_AGENT})
+                    page_object = requests.get(url)
                 except Exception:
                     print 'page_object: requests.get Error'
                 if page_object and page_object.status_code == 200:
@@ -202,7 +209,7 @@ def get_topten_list(music_name):
     url = 'http://music.baidu.com/search?key=' + music_name
     response = None
     try:
-        response = requests.get(url, headers={'User-Agent': USER_AGENT})
+        response = requests.get(url)
     except Exception:
         print 'get_topten_list requests.get Error'
     if response and response.status_code == 200:
@@ -275,7 +282,7 @@ def main():
         singer_name = args['singer']
         if not dirname.endswith(os.sep):
             dirname += os.sep
-        save_path = dirname + singer_name.replace(' ', '_')
+        save_path = dirname + filter_special_char(singer_name.decode('utf-8')).encode('utf-8')
         if not os.path.exists(save_path):
             os.mkdir(save_path)
 
